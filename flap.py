@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, colorsys, math, time 
 from pygame.locals import *
 import random
 
@@ -15,28 +15,44 @@ def main():
     pipespeed = -5
     randompipehight = 300
     gameover = 0
+    randompipechance = 1
+    Pipecolor = 1
+    score = 0
+    jumphight = -3
     
-
-    DISPLAY=pygame.display.set_mode((600,480),0,34)
+    screen = pygame.display.set_mode((800, 480))
 
     pipes = []
 
     WHITE=(255,255,255)
     BLUE=(0,0,244)
     RED=(255,0,0)
-    GREEN=(0,255,0)
-
-    random.randrange(1,4)
-    random.getstate
-
-    pygame.draw.rect(DISPLAY,BLUE,(x,y,100,50))
+    GREEN=(30,245,10)
+    BLACK=(0,0,0)
+    
+    #name of the game
+    pygame.display.set_caption('Flap birb by Keirman')
+    
+    
+    pygame.draw.rect(screen,BLUE,(x,y,100,50))
     while True:
-        if y <= -100:
-            y =  -100
+        if y <= -40:
+            y =  0
         if y >= 500:
             gameover = 1
 
+        font = pygame.font.SysFont("comicsansms", 35)
+
         
+
+        if randompipechance == 2:
+            Pipecolor = (255,164,0)
+            acceleration = -0.1
+            jumphight = 3
+
+        else:
+            Pipecolor = (255,0,0)
+            
         
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -44,7 +60,7 @@ def main():
                     if gameover == 1:  
                         print(gameover)
                     else:
-                        velocity = -3
+                        velocity = jumphight
                         print(y)
                 if event.key == pygame.K_r:
                     gameover = 0
@@ -58,21 +74,28 @@ def main():
                 pygame.quit()
                 sys.exit()
 
-        if pipex < -10:
-            pipex = 710
-        DISPLAY.fill((255,255,255))
-        player = pygame.draw.rect(DISPLAY,BLUE,(x,y,45,45))
+        if pipex < -35:
+            pipex = 810
+            randompipehight = random.randint(100, 500) 
+            randompipechance = random.randint(1, 25)
+            score += 1
+            
+        screen.fill((200,200,250))
+        player = pygame.draw.rect(screen,BLUE,(x,y,45,45))
+        grass = pygame.draw.rect(screen,GREEN,(x - 100, 445, 10000,150))
         if gameover == 0:
             y += velocity
         velocity += acceleration
+        print(velocity)
         if gameover == 0: 
             pipex += pipespeed
         #bottom pipe
-        pipe = pygame.draw.rect(DISPLAY,RED,(pipex,randompipehight,50,400))
+        pipe = pygame.draw.rect(screen,Pipecolor,(pipex,randompipehight,50,400))
         #top pipe
-        pipe2 = pygame.draw.rect(DISPLAY,RED,(pipex,randompipehight - 540,50,400))
+        pipe2 = pygame.draw.rect(screen,Pipecolor,(pipex,randompipehight - 560,50,400))
         
-        if player.colliderect(pipe2) or player.colliderect(pipe):
+        
+        if player.colliderect(pipe2) or player.colliderect(pipe) or player.colliderect(grass):
             gameover = 1
 
         pygame.display.update()
